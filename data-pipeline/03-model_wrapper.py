@@ -23,14 +23,21 @@ class Chatgpt(Model_Wrapper):
     
     def _summarize(self, text, summary_token_size):
         prompt = f"Summarize the following news within {summary_token_size} tokens:\n{text}\nSummary:"
-        response = openai.ChatCompletion.create(
-            model=self.model_name,
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": prompt},
-            ]
-        )
-        summary = response['choices'][0]['message']['content']
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt},
+        ]
+        try:
+            response = openai.ChatCompletion.create(
+                model=self.model_name,
+                messages=messages,
+            )
+            summary = response['choices'][0]['message']['content']
+        except:
+            from langchain_community.chat_models import ChatOllama
+            llm = ChatOllama(model="llama3")   
+            rsp = llm.invoke(messages)  
+            summary = rsp.content   
         return summary
     
 class Together(Model_Wrapper):

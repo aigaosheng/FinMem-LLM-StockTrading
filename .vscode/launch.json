@@ -1,0 +1,17 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            // "args": ["sim","-mdp", "data/03_model_input/tsla.pkl","-st", "2016-01-13","-et", "2016-01-20","-rm" ,"train", "-cp", "config/tsla_gpt_config.toml", "-ckp", "/home/gs/work/FinMem-LLM-StockTrading/data/06_train_checkpoint/","-rp", "data/05_train_model_output"],
+            "args": ["sim","-mdp", "data/03_model_input/tsla.pkl","-st", "2016-01-13","-et", "2016-01-20","-rm" ,"test", "-cp", "config/tsla_gpt_config.toml", "-tap","./data/06_train_checkpoint" , "-ckp", "./data/08_test_checkpoint","-rp", "data/09_results"],
+        }
+    ]
+}

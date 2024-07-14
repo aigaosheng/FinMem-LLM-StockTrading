@@ -421,15 +421,19 @@ def trading_reflection(
         cur_prompt = test_prompt
 
     # prompt + validated output
-    guard = gd.Guard.from_pydantic(
-        output_class=response_model, prompt=cur_prompt, num_reasks=1
-    )
+    from guardrails.hub import ProfanityFree
+    guard = gd.Guard().use(ProfanityFree())
+
+
+    # guard = gd.Guard.from_pydantic(output_class=response_model, prompt=cur_prompt, num_reasks=1)
 
     try:
         # , validated_output
         validated_outcomes = guard(
             endpoint_func,
             prompt_params={"investment_info": investment_info},
+
+            output_class=response_model, prompt=cur_prompt, num_reasks=1
         )
         logger.info("Guardrails Raw LLM Outputs")
         for i, o in enumerate(guard.history[0].raw_outputs):

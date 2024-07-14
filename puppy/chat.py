@@ -30,7 +30,7 @@ class ChatOpenAICompatible(ABC):
     def __init__(
         self,
         end_point: str,
-        model="gemini-pro",
+        model="phi3v", #"gemini-pro",
         system_message: str = "You are a helpful assistant.",
         other_parameters: Union[Dict[str, Any], None] = None,
     ):
@@ -49,7 +49,11 @@ class ChatOpenAICompatible(ABC):
         elif self.model.startswith("tgi"):
             self.headers = {
                         'Content-Type': 'application/json'
-                    }   
+                    }
+        elif self.model.startswith("phi3"):
+            self.headers = {
+                        'Content-Type': 'application/json'
+                    }               
         else:
             self.headers = {
                 "Authorization": f"Bearer {api_key}",
@@ -67,6 +71,9 @@ class ChatOpenAICompatible(ABC):
         elif self.model.startswith("tgi"):
             response_out = response.json()#[0]
             return response_out["generated_text"]
+        elif self.model.startswith("phi3"):
+            response_out = response.json()#[0]
+            return response_out["response"]
         else:
             raise NotImplementedError(f"Model {self.model} not implemented")
 
@@ -118,6 +125,21 @@ class ChatOpenAICompatible(ABC):
                 # payload = json.dumps(payload)
                 response = httpx.post(
                     self.end_point, headers=self.headers, json=payload, timeout=600.0  # type: ignore
+                )
+            elif self.model.startswith("phi3"):
+                payload = {
+                    # "model": self.model,  
+                    "prompt": "\n".join(map(lambda x: x['content'],input_str)),
+                    "max_context_length": 4096,
+                    "max_length": 4096,
+                    "images": None,
+                }
+                # payload.update(self.other_parameters)
+                payload = json.dumps(payload)
+            
+            
+                response = httpx.post(
+                    "http://0.0.0.0:6666/api/generate", headers=self.headers, data=payload, timeout=600.0  # type: ignore, self.end_point
                 )
             else:
                 payload = {
